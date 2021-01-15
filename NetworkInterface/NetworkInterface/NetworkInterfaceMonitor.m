@@ -79,6 +79,12 @@ bool interfaceIsActiveAndNotLoopback(const char* interfaceName) {
             NetworkPathStateObjC *state = [[NetworkPathStateObjC alloc] init];
             state.updateCount = callCount;
             state.status = nw_path_get_status(path);
+            if (@available(iOS 14.2, *)) {
+                state.unsatisfiedReason = nw_path_get_unsatisfied_reason(path);
+            } else {
+                // Fallback on earlier versions
+                state.unsatisfiedReason = 0;
+            }
             state.isExpensive = nw_path_is_expensive(path);
             state.isConstrained = nw_path_is_constrained(path);
             state.supportsDNS = nw_path_has_dns(path);

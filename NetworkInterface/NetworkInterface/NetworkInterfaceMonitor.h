@@ -37,6 +37,9 @@ typedef enum {
 
 @property (assign) nw_path_status_t status;
 
+// NOTE: only available on iOS 14.2 and above, otherwise set to 0.
+@property (assign) nw_path_unsatisfied_reason_t unsatisfiedReason;
+
 @property (assign) BOOL isExpensive;
 
 @property (assign) BOOL isConstrained;

@@ -24,8 +24,11 @@
 
 import Network
 
+
 public struct NetworkPathState {
     let status : NWPath.Status
+    @available(iOS 14.2, *)
+    fileprivate(set) lazy var unsatisfiedReason: NWPath.UnsatisfiedReason = NWPath.UnsatisfiedReason.notAvailable
     let isExpensive: Bool
     let isConstrained: Bool
     let supportsDNS: Bool
@@ -58,14 +61,19 @@ public func monitorNetworkPathState(handler: @escaping (NetworkPathState) -> Voi
                 }
             }
 
-            let state =  NetworkPathState(status: path.status,
-                                          isExpensive: path.isExpensive,
-                                          isConstrained: path.isConstrained,
-                                          supportsDNS: path.supportsDNS,
-                                          supportsIPv4: path.supportsIPv4,
-                                          supportsIPv6: path.supportsIPv6,
-                                          activeInterface: activeInterface,
-                                          interfaces: path.availableInterfaces)
+            var state = NetworkPathState(status: path.status,
+                                         isExpensive: path.isExpensive,
+                                         isConstrained: path.isConstrained,
+                                         supportsDNS: path.supportsDNS,
+                                         supportsIPv4: path.supportsIPv4,
+                                         supportsIPv6: path.supportsIPv6,
+                                         activeInterface: activeInterface,
+                                         interfaces: path.availableInterfaces)
+            if #available(iOS 14.2, *) {
+                state.unsatisfiedReason = path.unsatisfiedReason
+            } else {
+                // Fallback on earlier versions
+            }
             handler(state)
         }
         monitor.start(queue: DispatchQueue(label: "nwpathmonitor.queue"))

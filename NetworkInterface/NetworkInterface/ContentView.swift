@@ -41,18 +41,25 @@ func displayNetworkInterfaceInfo(viewModelState: NetworkInterfaceViewModel.Netwo
     case .nwpathSupported:
         return AnyView(Text("Querying network state..."))
     case .nwpathQueryResult(let networkInterfaceState):
-        let networkPathState = networkInterfaceState.networkPathState
+        var networkPathState = networkInterfaceState.networkPathState
         return
             AnyView(VStack(alignment: .leading, spacing: .some(10), content: {
                 Text("NWPath State").bold()
                 VStack(alignment: .leading, spacing: .some(10), content: {
                     Text("Update count: \(networkInterfaceState.updateCount)")
+                    Text("Path status:\n" + String(describing: networkPathState?.status))
+                    if #available(iOS 14.2, *) {
+                        Text("Unsatisfied reason:\n" + String(describing: networkPathState?.unsatisfiedReason))
+                    } else {
+                        // Fallback on earlier versions
+                    }
                     Text("Is expensive: \(String(describing:networkPathState?.isExpensive))")
                     Text("Is constrained: \(String(describing:networkPathState?.isConstrained))")
                     Text("Supports DNS: \(String(describing:networkPathState?.supportsDNS))")
                     Text("Supports IPv4: \(String(describing:networkPathState?.supportsIPv4))")
                     Text("Supports IPv6: \(String(describing:networkPathState?.supportsIPv6))")
-                    Text("Path status:\n" + String(describing: networkPathState?.status))
+                })
+                VStack(alignment: .leading, spacing: .some(10), content: {
                     Text("Active interface:" + String(describing: networkPathState?.activeInterface))
                     Text("Active interface type:" + String(describing: networkPathState?.activeInterface?.type))
                     Text("Available interfaces:" + String(describing: networkPathState?.interfaces))
